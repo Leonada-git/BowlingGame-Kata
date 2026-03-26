@@ -8,9 +8,33 @@ namespace BowlingGame_KataTDD
         TenthFrame sut = new();
 
         [Fact]
-        public void Have_ten_pins_upon_creation()
+        public void Has_two_rolls_upon_creation()
+        {
+            sut.RemainingRolls.Should().Be(2);
+        }
+
+        [Fact]
+        public void Has_ten_pins_upon_creation()
         {
             sut.RemainingPins.Should().Be(10);
+        }
+
+        [Fact]
+        public void Remaining_rolls_is_one_after_a_roll_is_made()
+        {
+            sut.AddRoll(1);
+
+            sut.RemainingRolls.Should().Be(1);
+        }
+
+        [Fact]
+        public void Remaining_rolls_is_zero_after_two_rolls_are_made()
+        {
+            sut.AddRoll(1);
+
+            sut.AddRoll(1);
+
+            sut.RemainingRolls.Should().Be(0);
         }
 
         [Fact]
@@ -32,6 +56,14 @@ namespace BowlingGame_KataTDD
         }
 
         [Fact]
+        public void Strike_gives_two_bonus_rolls()
+        {
+            sut.AddRoll(10);
+
+            sut.RemainingRolls.Should().Be(2);
+        }
+
+        [Fact]
         public void Strike_allows_second_roll()
         {
             sut.AddRoll(10);
@@ -42,7 +74,7 @@ namespace BowlingGame_KataTDD
         }
 
         [Fact]
-        public void Strike_in_tenth_frame_allows_third_roll()
+        public void Strike_allows_third_roll()
         {
             sut.AddRoll(10);
             sut.AddRoll(1);
@@ -78,7 +110,7 @@ namespace BowlingGame_KataTDD
             sut.AddRoll(10);
             sut.AddRoll(10);
 
-            var action = () => sut.AddRoll(10);
+            var action = () => sut.AddRoll(1);
 
             action.Should().NotThrow();
         }
@@ -92,6 +124,17 @@ namespace BowlingGame_KataTDD
             sut.AddRoll(1);
 
             sut.IsClosed.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Remaining_rolls_after_third_roll_when_strike()
+        {
+            sut.AddRoll(10);
+            sut.AddRoll(9);
+
+            sut.AddRoll(1);
+
+            sut.RemainingRolls.Should().Be(0);
         }
 
         [Fact]
@@ -114,7 +157,7 @@ namespace BowlingGame_KataTDD
         }
 
         [Fact]
-        public void Allows_full_pins_after_spare()
+        public void Resets_pins_after_spare()
         {
             sut.AddRoll(1);
 
@@ -124,7 +167,17 @@ namespace BowlingGame_KataTDD
         }
 
         [Fact]
-        public void Spare_in_tenth_frame_allows_third_roll()
+        public void Spare_gives_a_bonus_roll()
+        {
+            sut.AddRoll(1);
+
+            sut.AddRoll(9);
+
+            sut.RemainingRolls.Should().Be(1);
+        }
+
+        [Fact]
+        public void Spare_allows_third_roll()
         {
             sut.AddRoll(1);
 
@@ -147,6 +200,28 @@ namespace BowlingGame_KataTDD
         }
 
         [Fact]
+        public void Remaining_rolls_after_third_roll_when_spare()
+        {
+            sut.AddRoll(1);
+            sut.AddRoll(9);
+
+            sut.AddRoll(1);
+
+            sut.RemainingRolls.Should().Be(0);
+        }
+
+        [Fact]
+        public void Remaining_pins_after_third_roll_when_spare()
+        {
+            sut.AddRoll(1);
+            sut.AddRoll(9);
+
+            sut.AddRoll(1);
+
+            sut.RemainingPins.Should().Be(0);
+        }
+
+        [Fact]
         public void Closes_after_third_strike_roll_when_spare()
         {
             sut.AddRoll(1);
@@ -165,7 +240,16 @@ namespace BowlingGame_KataTDD
             sut.AddRoll(1);
 
             sut.IsClosed.Should().BeTrue();
+        }
 
+        [Fact]
+        public void Remaining_rolls_after_two_rolls_when_not_strike_or_spare()
+        {
+            sut.AddRoll(1);
+
+            sut.AddRoll(1);
+
+            sut.RemainingRolls.Should().Be(0);
         }
 
         [Fact]
@@ -178,5 +262,45 @@ namespace BowlingGame_KataTDD
             sut.RemainingPins.Should().Be(0);
         }
 
+        [Fact]
+        public void Throws_when_roll_after_frame_is_closed()
+        {
+            sut.AddRoll(1);
+            sut.AddRoll(1);
+
+            var action = () => sut.AddRoll(1);
+
+            action.Should().Throw<InvalidOperationException>()
+                .WithMessage("Cannot roll in a closed frame.");
+        }
+
+        [Fact]
+        public void Throws_when_number_of_pins_is_negative()
+        {
+            var action = () => sut.AddRoll(-1);
+
+            action.Should().Throw<ArgumentException>()
+                .WithMessage("Invalid number of pins.");
+        }
+
+        [Fact]
+        public void Throws_when_number_of_pins_exceeds_ten()
+        {
+            var action = () => sut.AddRoll(11);
+
+            action.Should().Throw<ArgumentException>()
+                .WithMessage("Invalid number of pins.");
+        }
+
+        [Fact]
+        public void Throws_when_number_of_pins_exceeds_remaining_pins()
+        {
+            sut.AddRoll(1);
+
+            var action = () => sut.AddRoll(10);
+
+            action.Should().Throw<ArgumentException>()
+                .WithMessage("Cannot knock down more pins than remaining.");
+        }
     }
 }

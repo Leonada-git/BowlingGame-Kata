@@ -2,14 +2,20 @@
 {
     public class NormalFrame : Frame
     {
-        private int TotalPins => _rolls.Sum();
+        const int MaxRolls = 2;
 
-        public bool IsStrike => _rolls.Count == 1 && IsStrikeRoll(First);
+        private int TotalPins => RollsInternal.Sum();
 
-        public bool IsSpare => _rolls.Count == 2 && IsSpareRoll(First, Second);
+        public bool IsStrike => HasFirstRoll && IsStrikeRoll(First);
 
-        public override bool IsClosed => IsStrike || _rolls.Count == 2;
+        public bool IsSpare => HasSecondRoll && IsSpareRoll(First, Second);
 
-        public override int RemainingPins => MaxPins - TotalPins;
+        public override bool IsClosed => IsStrike || RollsInternal.Count == MaxRolls;
+
+        public override int RemainingPins => IsClosed ? 0 : MaxPins - TotalPins;
+        public override int RemainingRolls => HasBonusRoll() ? 0 : MaxRolls - RollsInternal.Count;
+
+        protected override bool HasBonusRoll() => IsStrike || IsSpare;
+
     }
 }

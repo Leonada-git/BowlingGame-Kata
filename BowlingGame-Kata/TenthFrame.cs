@@ -3,52 +3,61 @@ namespace BowlingGame_Kata
 {
     public class TenthFrame : Frame
     {
+        const int MaxRollsWithoutBonus = 2;
+        private const int MaxRollsWithBonus = 3;
+
+        private int MaxAllowedRolls => HasBonusRoll()
+            ? MaxRollsWithBonus
+            : MaxRollsWithoutBonus;
 
         public override bool IsClosed =>
-            HasCompletedThreeRolls() ||
-            HasTwoRollsWithoutBonus();
+            HasReachedMaxRolls() ||
+            HasNoBonusAfterTwoRolls();
 
-        private bool HasTwoRollsWithoutBonus()
+        private bool HasNoBonusAfterTwoRolls()
         {
-            return _rolls.Count == 2 && !IsStrikeRoll(First) && !IsSpareRoll(First, Second);
+            return RollsInternal.Count == MaxRollsWithoutBonus && !IsStrikeRoll(First) && !IsSpareRoll(First, Second);
         }
 
-        private bool HasCompletedThreeRolls()
+        private bool HasReachedMaxRolls()
         {
-            return _rolls.Count == 3;
+            return RollsInternal.Count == MaxRollsWithBonus;
         }
 
-        public override int RemainingPins
+        public override int RemainingPins => CalculateRemainingPins();
+
+        private int CalculateRemainingPins()
         {
-            get
+            return RollsInternal.Count switch
             {
-                return _rolls.Count switch
-                {
-                    0 => MaxPins,
+                0 => RemainingAfterZeroRolls(),
 
-                    1 => RemainingAfterFirstRoll(),
+                1 => RemainingAfterFirstRoll(),
 
-                    2 => RemainingAfterSecondRollWithBonus(),
+                2 => RemainingAfterSecondRoll(),
 
-                    3 => 0,
-                    _ => throw new InvalidOperationException("Invalid number of rolls in tenth frame.")
-                };
-            }
+                3 => 0,
+                _ => throw new InvalidOperationException("Invalid number of rolls in tenth frame.")
+            };
         }
+
+        private int RemainingAfterZeroRolls() => MaxPins;
 
         private int RemainingAfterFirstRoll()
         {
-            return IsStrikeRoll(First) ? MaxPins : MaxPins - First.Value;
+            return IsStrikeRoll(First) ? MaxPins : MaxPins - First;
         }
 
-        private int RemainingAfterSecondRollWithBonus()
+        private int RemainingAfterSecondRoll()
         {
             return HasBonusRoll() ? MaxPins : 0;
         }
 
-        private bool HasBonusRoll()
-        {
-            return IsStrikeRoll(First) || IsSpareRoll(First, Second);
-        }
+        protected override bool HasBonusRoll() =>
+            (HasFirstRoll && IsStrikeRoll(First)) ||
+            (HasSecondRoll && IsSpareRoll(First, Second));
+
+        public override int RemainingRolls => MaxAllowedRolls - RollsInternal.Count;
+
     }
 }
