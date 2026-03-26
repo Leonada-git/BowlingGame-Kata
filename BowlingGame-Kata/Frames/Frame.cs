@@ -12,13 +12,13 @@ namespace BowlingGame_Kata.Frames
             _behavior = behavior ?? throw new ArgumentNullException(nameof(behavior));
         }
 
-        public IReadOnlyList<Roll> Rolls => _state.Rolls;
+        public Roll Roll(int index) => _state.GetRoll(index);
 
-        public int RemainingPins => _behavior.RemainingPins(_state);
         public int RemainingRolls => _behavior.RemainingRolls(_state);
+        public int RemainingPins => _behavior.RemainingPins(_state);
+        public bool IsStrike => BowlingRules.IsStrike(_state);
+        public bool IsSpare => BowlingRules.IsSpare(_state);
         public bool IsClosed => _behavior.IsClosed(_state);
-        public bool IsStrike => _behavior.IsStrike(_state);
-        public bool IsSpare => _behavior.IsSpare(_state);
 
         public void AddRoll(int pins)
         {

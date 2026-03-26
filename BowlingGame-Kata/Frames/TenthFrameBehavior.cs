@@ -14,16 +14,10 @@ namespace BowlingGame_Kata.Frames
 
         private bool HasNoBonusAfterTwoRolls(FrameState state)
         {
-            return state.Count == MaxRollsWithoutBonus && !IsSpare(state) && !IsStrikeRoll(state.First) && !IsStrikeRoll(state.Second);
+            return state.HasSecond && !BowlingRules.IsSpare(state) && !IsStrikeRoll(state.First) && !IsStrikeRoll(state.Second);
         }
 
-        public bool IsStrike(FrameState state) =>
-            state.HasFirst && IsStrikeRoll(state.First);
-
         private bool IsStrikeRoll(int pins) => pins == MaxPins;
-
-        public bool IsSpare(FrameState s) =>
-            s.HasSecond && s.First + s.Second == MaxPins;
 
         private bool HasReachedMaxRolls(FrameState state)
         {
@@ -51,7 +45,7 @@ namespace BowlingGame_Kata.Frames
 
         private int RemainingAfterFirstRoll(FrameState state)
         {
-            return IsStrike(state) ? MaxPins : MaxPins - state.First;
+            return BowlingRules.IsStrike(state) ? MaxPins : MaxPins - state.First;
         }
 
         private int RemainingAfterSecondRoll(FrameState state)
@@ -60,7 +54,7 @@ namespace BowlingGame_Kata.Frames
         }
 
         private bool HasBonusRoll(FrameState state) =>
-         IsStrike(state) || IsSpare(state);
+         BowlingRules.IsStrike(state) || BowlingRules.IsSpare(state);
 
         public int RemainingRolls(FrameState state) =>
             MaxAllowedRolls(state) - state.Count;

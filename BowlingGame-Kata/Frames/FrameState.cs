@@ -6,7 +6,7 @@ namespace BowlingGame_Kata.Frames
     {
         private readonly List<Roll> _rolls = new();
 
-        public IReadOnlyList<Roll> Rolls => _rolls;
+        public Roll GetRoll(int index) => _rolls[index];
 
         public int Count => _rolls.Count;
 

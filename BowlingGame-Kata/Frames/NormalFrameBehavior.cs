@@ -9,7 +9,7 @@ namespace BowlingGame_Kata.Frames
 
         public bool IsClosed(FrameState state)
         {
-            return IsStrike(state) || state.Count == MaxRolls;
+            return BowlingRules.IsStrike(state) || state.Count == MaxRolls;
         }
 
         public int RemainingPins(FrameState state)
@@ -20,7 +20,7 @@ namespace BowlingGame_Kata.Frames
 
         public int RemainingRolls(FrameState state)
         {
-            if (IsStrike(state) || IsSpare(state)) return 0;
+            if (BowlingRules.IsStrike(state) || BowlingRules.IsSpare(state)) return 0;
             return MaxRolls - state.Count;
         }
 
@@ -33,10 +33,5 @@ namespace BowlingGame_Kata.Frames
                 throw new ArgumentException("Cannot knock down more pins than remaining.");
         }
 
-        public bool IsStrike(FrameState s) =>
-            s.HasFirst && s.First == MaxPins;
-
-        public bool IsSpare(FrameState s) =>
-            s.HasSecond && s.First + s.Second == MaxPins;
     }
 }

@@ -6,7 +6,7 @@ namespace BowlingGame_Kata
     {
         const int TotalFrames = 10;
 
-        IFrameFactory _frameFactory;
+        readonly IFrameFactory _frameFactory;
         private readonly List<Frame> _frames = new();
 
         public IReadOnlyList<Frame> Frames => _frames.AsReadOnly();
@@ -48,11 +48,15 @@ namespace BowlingGame_Kata
 
         public void Roll(int pins)
         {
-            if (_frames.Count == TotalFrames && _frames.Last().IsClosed)
+            if (IsGameComplete())
                 throw new InvalidOperationException("Cannot exceed 10 frames.");
 
             GetCurrentFrame().AddRoll(pins);
         }
 
+        private bool IsGameComplete()
+        {
+            return _frames.Count == TotalFrames && _frames.Last().IsClosed;
+        }
     }
 }

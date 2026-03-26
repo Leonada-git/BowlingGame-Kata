@@ -9,7 +9,6 @@ namespace BowlingGame_KataTDD
     {
         Game sut = new(new GameFrames(new FrameFactory()));
 
-
         [Fact]
         public void Score_is_zero_upon_creation()
         {
