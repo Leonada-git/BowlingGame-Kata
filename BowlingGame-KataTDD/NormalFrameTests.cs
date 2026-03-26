@@ -5,7 +5,7 @@ namespace BowlingGame_KataTDD
 {
     public class NormalFrameTests
     {
-        NormalFrame sut = new();
+        Frame sut = new(new NormalFrameBehavior());
 
         [Fact]
         public void Has_two_rolls_upon_creation()
@@ -147,7 +147,7 @@ namespace BowlingGame_KataTDD
             var action = () => sut.AddRoll(-1);
 
             action.Should().Throw<ArgumentException>()
-                .WithMessage("Invalid number of pins.");
+                .WithMessage("Invalid pins.");
         }
 
         [Fact]
@@ -156,7 +156,7 @@ namespace BowlingGame_KataTDD
             var action = () => sut.AddRoll(11);
 
             action.Should().Throw<ArgumentException>()
-                .WithMessage("Invalid number of pins.");
+                .WithMessage("Invalid pins.");
         }
 
         [Fact]

@@ -9,8 +9,8 @@ namespace BowlingGame_Kata.Frames
         public Frame Create(int index)
         {
             return index < LastFrameIndex
-                ? new NormalFrame()
-                : new TenthFrame();
+                ? new Frame(new NormalFrameBehavior())
+                : new Frame(new TenthFrameBehavior());
         }
     }
 }

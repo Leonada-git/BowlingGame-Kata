@@ -1,65 +1,31 @@
-﻿namespace BowlingGame_Kata.Frames
+﻿using BowlingGame_Kata.Rolls;
+
+namespace BowlingGame_Kata.Frames
 {
-    public abstract class Frame
+    public class Frame
     {
-        protected const int MaxPins = 10;
+        private readonly FrameState _state = new();
+        private readonly IFrameBehavior _behavior;
 
-        private readonly List<int> _rolls = new();
-
-        protected IReadOnlyList<int> RollsInternal => _rolls;
-
-        protected bool HasFirstRoll => _rolls.Count >= 1;
-        protected bool HasSecondRoll => _rolls.Count >= 2;
-        protected int First
+        public Frame(IFrameBehavior behavior)
         {
-            get
-            {
-                if (!HasFirstRoll)
-                    throw new InvalidOperationException("First roll not available.");
-                return _rolls[0];
-            }
+            _behavior = behavior ?? throw new ArgumentNullException(nameof(behavior));
         }
 
-        protected int Second
+        public IReadOnlyList<Roll> Rolls => _state.Rolls;
+
+        public int RemainingPins => _behavior.RemainingPins(_state);
+        public int RemainingRolls => _behavior.RemainingRolls(_state);
+        public bool IsClosed => _behavior.IsClosed(_state);
+        public bool IsStrike => _behavior.IsStrike(_state);
+        public bool IsSpare => _behavior.IsSpare(_state);
+
+        public void AddRoll(int pins)
         {
-            get
-            {
-                if (!HasSecondRoll)
-                    throw new InvalidOperationException("Second roll not available.");
-                return _rolls[1];
-            }
-        }
+            var roll = new Roll(pins);
 
-        public abstract int RemainingPins { get; }
-        public abstract int RemainingRolls { get; }
-
-        public abstract bool IsClosed { get; }
-
-        public IReadOnlyList<int> Rolls => _rolls.AsReadOnly();
-
-        protected bool IsStrikeRoll(int pins) => pins == MaxPins;
-
-        protected bool IsSpareRoll(int first, int second) => first + second == MaxPins;
-
-        protected abstract bool HasBonusRoll();
-
-        public virtual void AddRoll(int pins)
-        {
-            ValidateRoll(pins);
-
-            _rolls.Add(pins);
-        }
-
-        protected virtual void ValidateRoll(int pins)
-        {
-            if (IsClosed)
-                throw new InvalidOperationException("Cannot roll in a closed frame.");
-
-            if (pins < 0 || pins > MaxPins)
-                throw new ArgumentException("Invalid number of pins.");
-
-            if (pins > RemainingPins)
-                throw new ArgumentException("Cannot knock down more pins than remaining.");
+            _behavior.Validate(_state, roll);
+            _state.Add(roll);
         }
     }
 }
