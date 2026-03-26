@@ -1,5 +1,6 @@
 ﻿using BowlingGame_Kata;
 using BowlingGame_Kata.Frames;
+using BowlingGame_Kata.Scoring;
 using FluentAssertions;
 
 
@@ -7,7 +8,7 @@ namespace BowlingGame_KataTDD
 {
     public class GameTests
     {
-        Game sut = new(new GameFrames(new FrameFactory()));
+        Game sut = new(new GameFrames(new FrameFactory()), new ScoreCalculator(new ScoreFactory()));
 
         [Fact]
         public void Score_is_zero_upon_creation()
@@ -16,7 +17,7 @@ namespace BowlingGame_KataTDD
         }
 
         [Fact]
-        public void Throws_when_number_of_pins_is_negative()
+        public void Throws_when_roll_negative_number_of_pins()
         {
             var action = () => sut.Roll(-1);
 
@@ -25,7 +26,7 @@ namespace BowlingGame_KataTDD
         }
 
         [Fact]
-        public void Throws_when_number_of_pins_exceeds_ten()
+        public void Throws_when_roll_past_ten_pins()
         {
             var action = () => sut.Roll(11);
 
@@ -57,6 +58,105 @@ namespace BowlingGame_KataTDD
 
             sut.Score().Should().Be(2);
         }
+
+        [Fact]
+        public void Stirke_score_is_ten_plus_next_Two_rolls()
+        {
+            sut.Roll(10);
+            sut.Roll(1);
+
+            sut.Roll(1);
+
+            sut.Score().Should().Be(14);
+        }
+
+        [Fact]
+        public void Spare_score_is_ten_plus_next_roll()
+        {
+            sut.Roll(1);
+            sut.Roll(9);
+
+            sut.Roll(1);
+
+            sut.Score().Should().Be(12);
+        }
+
+        [Fact]
+        public void Spare_score_is_ten_plus_next_roll_if_exists()
+        {
+            sut.Roll(1);
+
+            sut.Roll(9);
+
+            sut.Score().Should().Be(10);
+        }
+
+        [Fact]
+        public void Tracks_multiple_frames()
+        {
+            RollFrames(3);
+
+            sut.Score().Should().Be(6);
+        }
+        private void RollFrames(int roll)
+        {
+            for (int i = 0; i < roll; i++)
+            {
+                sut.Roll(1);
+                sut.Roll(1);
+            }
+        }
+
+        [Fact]
+        public void Tracks_multiple_Strike_frames()
+        {
+            RollStrikes(3);
+
+            sut.Score().Should().Be(60);
+        }
+        private void RollStrikes(int roll)
+        {
+            for (int i = 0; i < roll; i++)
+            {
+                sut.Roll(10);
+            }
+        }
+
+        [Fact]
+        public void Tracks_multiple_Spare_frames()
+        {
+            RollSpares(3);
+
+            sut.Score().Should().Be(32);
+        }
+
+        private void RollSpares(int roll)
+        {
+            for (int i = 0; i < roll; i++)
+            {
+                sut.Roll(1);
+                sut.Roll(9);
+            }
+        }
+
+        [Fact]
+        public void Prefect_game_scores_300()
+        {
+            RollStrikes(12);
+
+            sut.Score().Should().Be(300);
+        }
+
+        [Fact]
+        public void Full_game_of_spares_scores_110()
+        {
+            RollSpares(10);
+
+            sut.Roll(1);
+
+            sut.Score().Should().Be(110);
+        }
+
 
     }
 }

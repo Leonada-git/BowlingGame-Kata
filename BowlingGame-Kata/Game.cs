@@ -1,30 +1,31 @@
-﻿namespace BowlingGame_Kata
+﻿using BowlingGame_Kata.Scoring;
+
+namespace BowlingGame_Kata
 {
     public class Game
     {
-        int score;
+        readonly IGameFrames _frames;
+        readonly IScoreCalculator _scoreCalculator;
 
-        IGameFrames frames;
-
-        public Game(IGameFrames frames)
+        public Game(IGameFrames frames, IScoreCalculator scoreCalculator)
         {
-            this.frames = frames;
+            _frames = frames ?? throw new ArgumentNullException(nameof(frames));
+            _scoreCalculator = scoreCalculator ?? throw new ArgumentNullException(nameof(scoreCalculator));
         }
 
-        public void Roll(int pinKnocked)
+        public void Roll(int pins)
         {
-            if (pinKnocked < 0)
+            if (pins < 0)
                 throw new ArgumentException("Negative numbers are not allowed.");
-            if (pinKnocked > 10)
+            if (pins > 10)
                 throw new ArgumentException("Cannot exceed 10.");
 
-            frames.Roll(pinKnocked);
-            score += pinKnocked;
+            _frames.Roll(pins);
         }
 
         public int Score()
         {
-            return score;
+            return _scoreCalculator.CalculateTotalScore(_frames);
         }
     }
 }

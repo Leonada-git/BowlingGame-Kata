@@ -1,4 +1,5 @@
-﻿using BowlingGame_Kata.Frames;
+﻿using BowlingGame_Kata.Common;
+using BowlingGame_Kata.Frames;
 using FluentAssertions;
 
 namespace BowlingGame_KataTDD
@@ -82,7 +83,7 @@ namespace BowlingGame_KataTDD
 
             sut.AddRoll(9);
 
-            sut.IsSpare.Should().BeTrue();
+            sut.RollType.Should().Be(RollType.Spare);
         }
 
         [Fact]
@@ -110,7 +111,7 @@ namespace BowlingGame_KataTDD
         {
             sut.AddRoll(10);
 
-            sut.IsStrike.Should().BeTrue();
+            sut.RollType.Should().Be(RollType.Strike);
         }
 
         [Fact]

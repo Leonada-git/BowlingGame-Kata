@@ -6,7 +6,7 @@ namespace BowlingGame_Kata.Frames
     {
         private readonly List<Roll> _rolls = new();
 
-        public Roll GetRoll(int index) => _rolls[index];
+        public IReadOnlyList<Roll> Rolls => _rolls.AsReadOnly();
 
         public int Count => _rolls.Count;
 
@@ -19,7 +19,7 @@ namespace BowlingGame_Kata.Frames
 
         public int Second => HasSecond
             ? _rolls[1].Pins
-            : throw new InvalidOperationException();
+            : throw new InvalidOperationException("Second roll not available.");
 
         public int TotalPins => _rolls.Sum(r => r.Pins);
 

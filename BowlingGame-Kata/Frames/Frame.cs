@@ -1,4 +1,5 @@
-﻿using BowlingGame_Kata.Rolls;
+﻿using BowlingGame_Kata.Common;
+using BowlingGame_Kata.Rolls;
 
 namespace BowlingGame_Kata.Frames
 {
@@ -12,12 +13,20 @@ namespace BowlingGame_Kata.Frames
             _behavior = behavior ?? throw new ArgumentNullException(nameof(behavior));
         }
 
-        public Roll Roll(int index) => _state.GetRoll(index);
+        public IReadOnlyList<Roll> Rolls => _state.Rolls;
+        public int FirstRoll => _state.First;
+        public int SecondRoll => _state.Second;
+        public bool HasSecondRoll => _state.HasSecond;
 
         public int RemainingRolls => _behavior.RemainingRolls(_state);
+
         public int RemainingPins => _behavior.RemainingPins(_state);
-        public bool IsStrike => BowlingRules.IsStrike(_state);
-        public bool IsSpare => BowlingRules.IsSpare(_state);
+
+        public RollType RollType =>
+            BowlingRules.IsStrike(_state) ? RollType.Strike :
+            BowlingRules.IsSpare(_state) ? RollType.Spare :
+            RollType.Normal;
+
         public bool IsClosed => _behavior.IsClosed(_state);
 
         public void AddRoll(int pins)
