@@ -1,4 +1,4 @@
-﻿using BowlingGame_Kata;
+﻿using BowlingGame_Kata.Frames;
 using FluentAssertions;
 
 namespace BowlingGame_KataTDD

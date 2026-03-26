@@ -1,5 +1,4 @@
-﻿
-namespace BowlingGame_Kata
+﻿namespace BowlingGame_Kata.Frames
 {
     public class TenthFrame : Frame
     {
@@ -54,8 +53,8 @@ namespace BowlingGame_Kata
         }
 
         protected override bool HasBonusRoll() =>
-            (HasFirstRoll && IsStrikeRoll(First)) ||
-            (HasSecondRoll && IsSpareRoll(First, Second));
+            HasFirstRoll && IsStrikeRoll(First) ||
+            HasSecondRoll && IsSpareRoll(First, Second);
 
         public override int RemainingRolls => MaxAllowedRolls - RollsInternal.Count;
 

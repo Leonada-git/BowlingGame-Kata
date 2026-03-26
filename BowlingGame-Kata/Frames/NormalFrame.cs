@@ -1,4 +1,4 @@
-﻿namespace BowlingGame_Kata
+﻿namespace BowlingGame_Kata.Frames
 {
     public class NormalFrame : Frame
     {

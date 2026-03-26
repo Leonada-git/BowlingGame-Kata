@@ -2,8 +2,10 @@
 {
     public interface IGameFrames
     {
-        int FramesLeft();
+        public int RemainingPins { get; }
+        public int RemainingRolls { get; }
+        int RemainingFrames { get; }
 
-        void Roll(int pinKnocked);
+        void Roll(int pins);
     }
 }

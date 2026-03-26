@@ -1,4 +1,5 @@
 ﻿using BowlingGame_Kata;
+using BowlingGame_Kata.Frames;
 using FluentAssertions;
 
 
@@ -6,7 +7,7 @@ namespace BowlingGame_KataTDD
 {
     public class GameTests
     {
-        Game sut = new(new GameFrames());
+        Game sut = new(new GameFrames(new FrameFactory()));
 
 
         [Fact]

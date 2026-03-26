@@ -1,41 +1,57 @@
-﻿namespace BowlingGame_Kata
+﻿using BowlingGame_Kata.Frames;
+
+namespace BowlingGame_Kata
 {
     public class GameFrames : IGameFrames
     {
-        const int InitialFrames = 10;
+        const int TotalFrames = 10;
 
-        List<NormalFrame> frames;
+        IFrameFactory _frameFactory;
+        private readonly List<Frame> _frames = new();
 
-        public int RemainingPins => CurrentFrame().RemainingPins;
+        public IReadOnlyList<Frame> Frames => _frames.AsReadOnly();
 
-        public GameFrames()
+        public GameFrames(IFrameFactory frameFactory)
         {
-            frames = new();
+            _frameFactory = frameFactory ?? throw new ArgumentNullException(nameof(frameFactory));
         }
 
-        private NormalFrame CurrentFrame()
+        public int RemainingPins => GetCurrentFrame().RemainingPins;
+        public int RemainingRolls => GetCurrentFrame().RemainingRolls;
+
+        public int RemainingFrames => TotalFrames - _frames.Count(f => f.IsClosed);
+
+        private Frame GetCurrentFrame()
         {
-            if (frames.LastOrDefault() is not { IsClosed: false })
+            EnsureFrameExists();
+
+            return _frames.Last();
+        }
+
+        private bool HasOpenFrame()
+        {
+            return _frames.LastOrDefault()?.IsClosed == false;
+        }
+
+        private void EnsureFrameExists()
+        {
+            if (!HasOpenFrame() && _frames.Count < TotalFrames)
             {
-                frames.Add(new NormalFrame());
+                _frames.Add(CreateNextFrame());
             }
-
-            return frames.Last();
         }
 
-        public int FramesLeft()
+        private Frame CreateNextFrame()
         {
-            int completedFrames = frames.Count(f => f.IsClosed);
-            return InitialFrames - completedFrames;
+            return _frameFactory.Create(_frames.Count);
         }
 
         public void Roll(int pins)
         {
-            if (frames.Count == 10 && frames.Last().IsClosed)
+            if (_frames.Count == TotalFrames && _frames.Last().IsClosed)
                 throw new InvalidOperationException("Cannot exceed 10 frames.");
 
-            CurrentFrame().AddRoll(pins);
-
+            GetCurrentFrame().AddRoll(pins);
         }
 
     }

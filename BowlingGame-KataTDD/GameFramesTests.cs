@@ -1,16 +1,23 @@
 ﻿using BowlingGame_Kata;
+using BowlingGame_Kata.Frames;
 using FluentAssertions;
 
 namespace BowlingGame_KataTDD
 {
     public class GameFramesTests
     {
-        GameFrames sut = new();
+        GameFrames sut = new(new FrameFactory());
 
         [Fact]
         public void Has_ten_frames_upon_creation()
         {
-            sut.FramesLeft().Should().Be(10);
+            sut.RemainingFrames.Should().Be(10);
+        }
+
+        [Fact]
+        public void Has_two_rolls_upon_creation()
+        {
+            sut.RemainingRolls.Should().Be(2);
         }
 
         [Fact]
@@ -20,15 +27,12 @@ namespace BowlingGame_KataTDD
         }
 
         [Fact]
-        public void Advances_frame_when_current_frame_is_completed()
+        public void Advances_frame_when_current_frame_is_closed()
         {
             sut.Roll(1);
             sut.Roll(1);
 
-            sut.Roll(1);
-
-            sut.FramesLeft().Should().Be(9);
-            sut.RemainingPins.Should().Be(9);
+            sut.RemainingFrames.Should().Be(9);
         }
 
         [Fact]
@@ -36,23 +40,24 @@ namespace BowlingGame_KataTDD
         {
             sut.Roll(10);
 
-            sut.FramesLeft().Should().Be(9);
+            sut.RemainingFrames.Should().Be(9);
         }
 
         [Fact]
-        public void Does_not_advance_frame_when_frame_is_not_completed()
+        public void Does_not_advance_frame_when_frame_is_not_closed()
         {
             sut.Roll(1);
 
-            sut.FramesLeft().Should().Be(10);
+            sut.RemainingRolls.Should().Be(1);
+            sut.RemainingFrames.Should().Be(10);
         }
 
         [Fact]
-        public void Tracks_multiple_completed_frames()
+        public void Tracks_multiple_closed_frames()
         {
             RollFrames(3);
 
-            sut.FramesLeft().Should().Be(7);
+            sut.RemainingFrames.Should().Be(7);
         }
 
         [Fact]
@@ -60,7 +65,9 @@ namespace BowlingGame_KataTDD
         {
             RollFrames(10);
 
-            sut.FramesLeft().Should().Be(0);
+            sut.RemainingFrames.Should().Be(0);
+            sut.RemainingRolls.Should().Be(0);
+            sut.RemainingPins.Should().Be(0);
         }
 
         private void RollFrames(int roll)
@@ -84,22 +91,26 @@ namespace BowlingGame_KataTDD
         }
 
         [Fact]
-        public void Throws_when_roll_is_made_after_ten_strikes_are_completed()
+        public void Strike_in_thenth_frame_give_two_bonus_rolls()
         {
-            RollStrikes(10);
+            RollFrames(9);
 
-            var action = () => sut.Roll(1);
+            sut.Roll(10);
 
-            action.Should().Throw<InvalidOperationException>()
-                .WithMessage("Cannot exceed 10 frames.");
+            sut.RemainingRolls.Should().Be(2);
+            sut.RemainingPins.Should().Be(10);
         }
 
-        private void RollStrikes(int pins)
+        [Fact]
+        public void Spare_in_thenth_frame_give_a_bonus_roll()
         {
-            for (int i = 0; i < pins; i++)
-            {
-                sut.Roll(10);
-            }
+            RollFrames(9);
+            sut.Roll(1);
+
+            sut.Roll(9);
+
+            sut.RemainingRolls.Should().Be(1);
+            sut.RemainingPins.Should().Be(10);
         }
 
     }
