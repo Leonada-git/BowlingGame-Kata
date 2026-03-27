@@ -2,58 +2,22 @@
 
 namespace BowlingGame_Kata.Scoring
 {
-    public class StrikeScoringBehavior : IScoringBehavior
+    public class StrikeScoringBehavior : ScoringBehaviorBase
     {
-        Frame _frame;
 
-        int totaleScore;
-
-        public StrikeScoringBehavior(Frame frame)
+        protected override int CalculateBonus(FrameContext context)
         {
-            _frame = frame ?? throw new ArgumentNullException(nameof(frame));
-        }
+            var next = context.Next ?? throw new InvalidOperationException("Next frame is required.");
 
-        public int CalculateScore(IReadOnlyList<Frame> frames, int i)
-        {
-            totaleScore = _frame.Rolls.Sum(r => r.Pins);
-            CalculateBonus(frames, i);
-            return totaleScore;
-        }
+            int bonus = next.SumStrikeBonusRolls;
 
-        private void CalculateBonus(IReadOnlyList<Frame> frames, int index)
-        {
-            if (IsNextFrameExists(frames, index))
+            if (next.NeedsExtraRollFromNextFrame && context.HasNextNext)
             {
-                totaleScore += frames[index + 1].Rolls.Take(2).Sum(r => r.Pins);
-                if (IsNextFrameHasTwoRolls(frames[index + 1]))
-                {
-                    return;
-                }
-                AddBonusFromSecondNextFrame(frames, index);
+                bonus += context.NextNext!.FirstRoll;
             }
+
+            return bonus;
         }
 
-        private void AddBonusFromSecondNextFrame(IReadOnlyList<Frame> frames, int index)
-        {
-            if (HasSecondNextFrame(frames, index))
-            {
-                totaleScore += frames[index + 2].FirstRoll;
-            }
-        }
-
-        private static bool HasSecondNextFrame(IReadOnlyList<Frame> frames, int index)
-        {
-            return frames.Count() >= index + 3;
-        }
-
-        private bool IsNextFrameExists(IReadOnlyList<Frame> frames, int index)
-        {
-            return frames.Count() >= index + 2;
-        }
-
-        private bool IsNextFrameHasTwoRolls(Frame frame)
-        {
-            return frame.HasSecondRoll;
-        }
     }
 }

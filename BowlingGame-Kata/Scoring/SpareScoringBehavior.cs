@@ -2,35 +2,14 @@
 
 namespace BowlingGame_Kata.Scoring
 {
-    public class SpareScoringBehavior : IScoringBehavior
+    public class SpareScoringBehavior : ScoringBehaviorBase
     {
-        Frame _frame;
-
-        int totaleScore;
-
-        public SpareScoringBehavior(Frame frame)
+        protected override int CalculateBonus(FrameContext context)
         {
-            _frame = frame ?? throw new ArgumentNullException(nameof(frame));
-        }
+            var next = context.Next ?? throw new InvalidOperationException("Next frame is required.");
 
-        public int CalculateScore(IReadOnlyList<Frame> frames, int i)
-        {
-            totaleScore = _frame.Rolls.Sum(r => r.Pins);
-            CalculateBonus(frames, i);
-            return totaleScore;
-        }
+            return next.FirstRoll;
 
-        private void CalculateBonus(IReadOnlyList<Frame> frames, int index)
-        {
-            if (IsNextRollExists(frames, index))
-            {
-                totaleScore += frames[index + 1].FirstRoll;
-            }
-        }
-
-        private bool IsNextRollExists(IReadOnlyList<Frame> frames, int index)
-        {
-            return frames.Count() >= index + 2;
         }
     }
 }

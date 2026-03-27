@@ -31,7 +31,8 @@ namespace BowlingGame_Kata.Scoring
         {
             for (var i = 0; i < _scores.Count; i++)
             {
-                totaleScore += _scores[i].CalculateScore(frames, i);
+                var frameContext = new FrameContext(frames, i);
+                totaleScore += _scores[i].CalculateScore(frameContext);
             }
         }
 

@@ -9,9 +9,9 @@ namespace BowlingGame_Kata.Scoring
         {
             return frame.RollType switch
             {
-                RollType.Normal => new NormalScoringBehavior(frame),
-                RollType.Strike => new StrikeScoringBehavior(frame),
-                RollType.Spare => new SpareScoringBehavior(frame),
+                RollType.Normal => new NormalScoringBehavior(),
+                RollType.Strike => new StrikeScoringBehavior(),
+                RollType.Spare => new SpareScoringBehavior(),
                 _ => throw new InvalidOperationException("Unknown roll type")
             };
         }

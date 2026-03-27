@@ -14,9 +14,18 @@ namespace BowlingGame_Kata.Frames
         }
 
         public IReadOnlyList<Roll> Rolls => _state.Rolls;
+
+        public int Score => Rolls.Sum(r => r.Pins);
+
+        public int SumStrikeBonusRolls => Rolls.Take(2).Sum(r => r.Pins);
+
         public int FirstRoll => _state.First;
+
         public int SecondRoll => _state.Second;
+
         public bool HasSecondRoll => _state.HasSecond;
+
+        public bool NeedsExtraRollFromNextFrame => !HasSecondRoll;
 
         public int RemainingRolls => _behavior.RemainingRolls(_state);
 
@@ -36,5 +45,8 @@ namespace BowlingGame_Kata.Frames
             _behavior.Validate(_state, roll);
             _state.Add(roll);
         }
+
+
+
     }
 }
