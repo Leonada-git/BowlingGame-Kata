@@ -17,7 +17,7 @@ namespace BowlingGame_KataTDD
         }
 
         [Fact]
-        public void Throws_when_roll_negative_number_of_pins()
+        public void Throws_when_rolls_negative_number_of_pins()
         {
             var action = () => sut.Roll(-1);
 
@@ -26,7 +26,7 @@ namespace BowlingGame_KataTDD
         }
 
         [Fact]
-        public void Throws_when_roll_past_ten_pins()
+        public void Throws_when_rolls_past_ten_pins()
         {
             var action = () => sut.Roll(11);
 
@@ -34,20 +34,15 @@ namespace BowlingGame_KataTDD
                 .WithMessage("Cannot exceed 10.");
         }
 
-        [Fact]
-        public void Score_is_one_when_roll_knocks_one_pin()
+        [Theory]
+        [InlineData(1, 1)]
+        [InlineData(5, 5)]
+        [InlineData(7, 7)]
+        public void Score_is_the_number_of_pins_knocked_down(int pins, int expectedScore)
         {
-            sut.Roll(1);
+            sut.Roll(pins);
 
-            sut.Score().Should().Be(1);
-        }
-
-        [Fact]
-        public void Score_is_the_number_of_pins_knocked_down()
-        {
-            sut.Roll(5);
-
-            sut.Score().Should().Be(5);
+            sut.Score().Should().Be(expectedScore);
         }
 
         [Fact]
@@ -56,11 +51,13 @@ namespace BowlingGame_KataTDD
             sut.Roll(1);
             sut.Roll(1);
 
-            sut.Score().Should().Be(2);
+            sut.Roll(1);
+
+            sut.Score().Should().Be(3);
         }
 
         [Fact]
-        public void Stirke_score_is_ten_plus_next_Two_rolls()
+        public void Stirke_score_is_ten_plus_next_two_rolls()
         {
             sut.Roll(10);
             sut.Roll(1);
@@ -68,6 +65,16 @@ namespace BowlingGame_KataTDD
             sut.Roll(1);
 
             sut.Score().Should().Be(14);
+        }
+
+        [Fact]
+        public void Strike_score_is_ten_plus_next_two_rolls_if_exists()
+        {
+            sut.Roll(10);
+
+            sut.Roll(1);
+
+            sut.Score().Should().Be(12);
         }
 
         [Fact]
@@ -98,6 +105,7 @@ namespace BowlingGame_KataTDD
 
             sut.Score().Should().Be(6);
         }
+
         private void RollFrames(int roll)
         {
             for (int i = 0; i < roll; i++)
@@ -114,6 +122,7 @@ namespace BowlingGame_KataTDD
 
             sut.Score().Should().Be(60);
         }
+
         private void RollStrikes(int roll)
         {
             for (int i = 0; i < roll; i++)
@@ -140,7 +149,7 @@ namespace BowlingGame_KataTDD
         }
 
         [Fact]
-        public void Prefect_game_scores_300()
+        public void Score_of_prefect_game_is_300()
         {
             RollStrikes(12);
 
@@ -156,7 +165,5 @@ namespace BowlingGame_KataTDD
 
             sut.Score().Should().Be(110);
         }
-
-
     }
 }
